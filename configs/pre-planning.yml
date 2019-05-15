@@ -1,0 +1,5 @@
+# Identification parameters
+exp_name: "o2p2_pre_planning_next_state_prediction"
+
+# Dataset parameters
+data_root: '/data/Rudra/interaction_modeling/o2p2/o2p2/rendered/initial_final/'
