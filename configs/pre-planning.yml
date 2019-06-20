@@ -15,4 +15,18 @@ num_workers: 0
 use_cuda: False
 batch_size: 1
 
+perception:
+  ic: 4  # Number of channels in the input tensor to perception module
+  npf: 32  # Number of out channels for the base convolution, using it's multiplicative factor
+  ks: 4  # Kernel size for convolutions
+  stride: 2  # Stride for convolutions
+  obj_dim: 256  # Object vector dimension
+
+render:
+  oc: 3  # Number of channels in the output tensor
+  mc: 1  # Number of channels in the mask
+  obj_dim: 256  # Object vector dimension
+  ks1: 5  # Kernel size for first two convolutions (4 convs in total)
+  ks2: 6  # Kernel size for last two convolutions  (4 convs in total)
+  stride: 2  # Stride for convolutions
 
