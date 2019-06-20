@@ -4,9 +4,9 @@ import torch.nn as nn
 import argparse
 from misc.utils import *
 
-class PerceptionEncoderModule(nn.Module):
+class PerceptionModule(nn.Module):
     def __init__(self, params):
-        super(PerceptionEncoderModule, self).__init__()
+        super(PerceptionModule, self).__init__()
         self.params = params
         self.perception_params = self.params['perception']
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     opts = parser.parse_args()
     params = get_config(opts.config) 
 
-    perception_module = PerceptionEncoderModule(params)
+    perception_module = PerceptionModule(params)
     img = torch.randn(1, 3, 64, 64)
     mask = torch.randn(1, 1, 64, 64)
 
