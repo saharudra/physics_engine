@@ -4,7 +4,7 @@ Data directory structure:
 
 Initial Final: {'initial_final':{'train': , 'val': }}
 
-#### Perception Module
+#### Choices to try
 * In the paper, they mention perception module takes in segmented images. 
     * Input: (img, mask) or (img * mask)
         * Currently trying (img, mask). Try (img * mask) as well. 
