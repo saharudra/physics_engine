@@ -14,3 +14,4 @@ Initial Final: {'initial_final':{'train': , 'val': }}
 * Physics Interaction Module
     * Combining the two object vectors before passing them through the interaction engine.
         * Currently concatenating them.
+    * Using batch-normalization in the physics engine's mlp.
