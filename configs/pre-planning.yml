@@ -15,6 +15,7 @@ num_workers: 0
 use_cuda: False
 batch_size: 1
 
+# Module specific parameters
 perception:
   ic: 4  # Number of channels in the input tensor to perception module
   npf: 32  # Number of out channels for the base convolution, using it's multiplicative factor
@@ -33,4 +34,6 @@ render:
 physics-transition:
   obj_dim: 256
   hidden: 512
+
+# Training parameters
 
