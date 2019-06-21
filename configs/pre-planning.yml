@@ -30,3 +30,7 @@ render:
   ks2: 6  # Kernel size for last two convolutions  (4 convs in total)
   stride: 2  # Stride for convolutions
 
+physics-transition:
+  obj_dim: 256
+  hidden: 512
+
