@@ -13,6 +13,8 @@ class O2P2Model(nn.Module):
 
     def forward(self, ini_img, ini_masks, num_objs):
         """
-        TODO: The dataloader is fucking up a bit w.r.t the masks. Check into that.
+        TODO: The forward pass through the model will give the outputs required for loss calculation.
+              Trainer will work on this model, thus changing the model, when replacing this with a batched run
+              will be easier this way.
         """
         pass
