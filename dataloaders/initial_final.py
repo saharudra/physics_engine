@@ -38,15 +38,22 @@ class InitialFinal(Dataset):
             config = pickle.load(pf)
         curr_masks = list(config['masks'].values())
         num_objects = len(curr_masks)
-        ini_masks = []
-        fin_masks = []
+        left_objects = self.params['max_objects'] - num_objects
+        ini_masks = torch.Tensor().float()
+        fin_masks = torch.Tensor().float()
 
+        # Add initial and final masks to the tensor.
         for mask in curr_masks:
-            curr_ini_mask = torch.from_numpy(self.rgb2gray(mask[0]))
-            curr_fin_mask = torch.from_numpy(self.rgb2gray(mask[1]))
-            ini_masks.append(curr_ini_mask)
-            fin_masks.append(curr_fin_mask)
+            curr_ini_mask = torch.from_numpy(self.rgb2gray(mask[0])).unsqueeze(0).float()
+            curr_fin_mask = torch.from_numpy(self.rgb2gray(mask[1])).unsqueeze(0).float()
+            ini_masks = torch.cat((ini_masks, curr_ini_mask), 0)
+            fin_masks = torch.cat((fin_masks, curr_fin_mask), 0)
 
+        # Add all 0 masks to the tensor
+        zero_mask = torch.zeros(1, self.params['img_h'], self.params['img_w']).float()
+        for _ in range(left_objects):
+            ini_masks = torch.cat((ini_masks, zero_mask), 0)
+            fin_masks = torch.cat((fin_masks, zero_mask), 0)
 
         # Define sample dictionary and add the required inputs.
         sample = {}
