@@ -43,11 +43,20 @@ class O2P2Model(nn.Module):
             curr_rgb_img = curr_obj_rgb * curr_obj_mask
             recon_ini_img = recon_ini_img + curr_obj_rgb * curr_obj_mask
             
-        # Get transistions of object vector
+        # Get transistions of object vectors
         trans_obj_vec = torch.Tensor().float()
         for obj in range(num_objs.item()):
-            
+            # TODO: Code goes here
 
+        # Get interactions of object vectors
+        # TODO: Code goes here
+
+        # Get final object vector 
+        # o_f = o_trans + o_interact + o_ini
+        # TODO: Code goes here
+
+        # Reconstruct transition image
+        # TODO: Code goes here
 
 
 if __name__ == '__main__':
