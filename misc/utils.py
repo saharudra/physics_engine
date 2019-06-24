@@ -5,7 +5,8 @@ import errno
 
 def get_config(config):
     with open(config, 'r') as stream:
-        return yaml.load(stream)
+        # Using FullLoader as we trust the input stream
+        return yaml.load(stream, Loader=yaml.FullLoader)
 
 def mkdir_p(path):
     try:

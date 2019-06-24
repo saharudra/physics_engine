@@ -90,7 +90,7 @@ def initial_final_dataloader(params):
                               batch_size=params['batch_size'], shuffle=True, **kwargs)
     val_loader = DataLoader(dataset=val_set,
                              batch_size=params['batch_size'], shuffle=False, **kwargs)
-    return train_loader
+    return train_loader, val_loader
 
 
 if __name__ == '__main__':
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     opts = parser.parse_args()
     params = get_config(opts.config)
 
-    train_loader = initial_final_dataloader(params)
+    train_loader, val_loader = initial_final_dataloader(params)
 
     for idx, sample in enumerate(train_loader):
         ini_img = sample['ini_img']

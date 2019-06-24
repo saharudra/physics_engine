@@ -10,7 +10,7 @@ Initial Final: {'initial_final':{'train': , 'val': }}
         * Currently trying (img, mask). Try (img * mask) as well. 
 * Render module for mask.
     * Putting Sigmoid on top of final convolution.
-        * Currently not using sigmoid, mask outputs are logits.
+        * Currently using sigmoid, try w/o sigmoid in which case the mask outputs are logits.
 * Physics Interaction Module
     * Combining the two object vectors before passing them through the interaction engine.
         * Currently concatenating them.

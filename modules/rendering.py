@@ -36,7 +36,8 @@ class RenderModule(nn.Module):
             nn.ConvTranspose2d(self.render_params['obj_dim'] // 4, self.render_params['obj_dim'] // 8, self.render_params['ks2'], self.render_params['stride']),
             nn.LeakyReLU(inplace=True),
             nn.BatchNorm2d(self.render_params['obj_dim'] // 8),
-            nn.ConvTranspose2d(self.render_params['obj_dim'] // 8, self.render_params['mc'], self.render_params['ks2'], self.render_params['stride'])
+            nn.ConvTranspose2d(self.render_params['obj_dim'] // 8, self.render_params['mc'], self.render_params['ks2'], self.render_params['stride']),
+            nn.Sigmoid()
         )
 
     def forward(self, obj_vec):

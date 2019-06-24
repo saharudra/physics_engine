@@ -13,7 +13,7 @@ class PhysicsTrans(nn.Module):
 
         self.unary_potential_network()
 
-    def unary_potential_network():
+    def unary_potential_network(self):
         self.unary_transition = nn.Sequential(
             nn.Linear(self.unary_params['obj_dim'], self.unary_params['hidden']),
             nn.LeakyReLU(inplace=True),
@@ -39,7 +39,7 @@ class PhysicsInteract(nn.Module):
 
         self.pairwise_potential_network()
 
-    def pairwise_potential_network():
+    def pairwise_potential_network(self):
         self.interact_transition = nn.Sequential(
             nn.Linear(self.interaction_params['hidden'], self.interaction_params['hidden']),
             nn.LeakyReLU(inplace=True),

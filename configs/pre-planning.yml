@@ -13,7 +13,7 @@ mask_h: 64  # Height of mask
 mask_w: 64  # Width of mask
 num_workers: 0
 use_cuda: False
-batch_size: 64
+batch_size: 1
 
 # Module specific parameters
 perception:
