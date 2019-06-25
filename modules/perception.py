@@ -43,16 +43,16 @@ class PerceptionModule(nn.Module):
         return object_vector
 
 
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser(description='O2P2 initial final preprocessing')
-#     parser.add_argument('--config', type=str, default='/home/rudra/Downloads/rudra/relationship_modeling/o2p2/physics_engine/configs/pre-planning.yml',
-#                             help = 'Path to config file')
-#     opts = parser.parse_args()
-#     params = get_config(opts.config) 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='O2P2 initial final preprocessing')
+    parser.add_argument('--config', type=str, default='/home/rudra/Downloads/rudra/relationship_modeling/o2p2/physics_engine/configs/pre-planning.yml',
+                            help = 'Path to config file')
+    opts = parser.parse_args()
+    params = get_config(opts.config) 
 
-#     perception_module = PerceptionModule(params)
-#     img = torch.randn(1, 3, 64, 64)
-#     mask = torch.randn(1, 1, 64, 64)
+    perception_module = PerceptionModule(params)
+    img = torch.randn(1, 3, 64, 64)
+    mask = torch.randn(1, 1, 64, 64)
 
-#     obj_vec = perception_module(img, mask)
-#     print(obj_vec.size())
+    obj_vec = perception_module(img, mask)
+    print(obj_vec.size())

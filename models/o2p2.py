@@ -31,6 +31,8 @@ class O2P2Model(nn.Module):
         """
         # Get initial object vectors: [num_objs, obj_dim]
         ini_obj_vec = torch.Tensor().float()
+        if self.params['use_cuda']:
+            ini_obj_vec = ini_obj_vec.cuda()
         for obj in range(num_objs.item()):
             curr_obj_mask = ini_masks[:, obj:obj+1, :, :]
             curr_obj_vec = self.perception_moddule(ini_img, curr_obj_mask)
@@ -39,17 +41,30 @@ class O2P2Model(nn.Module):
         # Reconstruct initial image
         recon_ini_img = torch.zeros((ini_img.size())).float()
         for obj in range(num_objs.item()):
-            curr_obj_rgb, curr_obj_mask = self.render_module(ini_obj_vec[:, obj:obj+1, :, :])
+            curr_obj_rgb, curr_obj_mask = self.render_module(ini_obj_vec[obj:obj+1, :])
             curr_rgb_img = curr_obj_rgb * curr_obj_mask
             recon_ini_img = recon_ini_img + curr_obj_rgb * curr_obj_mask
             
         # Get transistions of object vectors
         trans_obj_vec = torch.Tensor().float()
+        if self.params['use_cuda']:
+            trans_obj_vec = trans_obj_vec.cuda()
         for obj in range(num_objs.item()):
-            # TODO: Code goes here
+            curr_trans_obj_vec = self.physics_transistion_module(ini_obj_vec[obj:obj+1, :])
+            trans_obj_vec = torch.cat((trans_obj_vec, curr_trans_obj_vec), 0)
 
         # Get interactions of object vectors
-        # TODO: Code goes here
+        interact_obj_vec = torch.Tensor().float()
+        if self.params['use_cuda']:
+            interact_obj_vec = interact_obj_vec.cuda()
+        for curr_obj in range(num_objs.item()):
+            curr_interact_obj_vec = torch.zeros((1, self.params['perception']['obj_dim']))
+            for other_obj in range(num_objs.item()):
+                if not(curr_obj == other_obj):
+                    temp_obj_vec = self.physics_interaction_module(ini_obj_vec[curr_obj:curr_obj+1, :], ini_obj_vec[other_obj:other_obj+1, :])
+                    curr_interact_obj_vec += temp_obj_vec
+            interact_obj_vec = torch.cat((interact_obj_vec, curr_interact_obj_vec), 0)
+
 
         # Get final object vector 
         # o_f = o_trans + o_interact + o_ini
