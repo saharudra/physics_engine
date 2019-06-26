@@ -24,6 +24,8 @@ class O2P2Trainer(nn.Module):
         for epoch in range(self.params['max_epochs']):
             with trange(len(self.train_loader)) as t:
                 self.model.train()
+                for idx, sample in enumerate(train_loader):
+                    ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
 
 
     def eval(self):
