@@ -40,10 +40,12 @@ class O2P2Model(nn.Module):
         
         # Reconstruct initial image
         recon_ini_img = torch.zeros((ini_img.size())).float()
+        if self.params['use_cuda']:
+            recon_ini_img = recon_ini_img.cuda()
         for obj in range(num_objs.item()):
             curr_obj_rgb, curr_obj_mask = self.render_module(ini_obj_vec[obj:obj+1, :])
             curr_rgb_img = curr_obj_rgb * curr_obj_mask
-            recon_ini_img = recon_ini_img + curr_obj_rgb * curr_obj_mask
+            recon_ini_img = recon_ini_img + curr_rgb_img
             
         # Get transistions of object vectors
         trans_obj_vec = torch.Tensor().float()
@@ -68,10 +70,23 @@ class O2P2Model(nn.Module):
 
         # Get final object vector 
         # o_f = o_trans + o_interact + o_ini
-        # TODO: Code goes here
+        fin_obj_vec = torch.Tensor().float()
+        if self.params['use_cuda']:
+            fin_obj_vec = fin_obj_vec.cuda()
+        for obj in range(num_objs.item()):
+            curr_fin_obj_vec = ini_obj_vec[obj:obj+1, :] + interact_obj_vec[obj:obj+1, :] + trans_obj_vec[obj:obj+1, :]
+            fin_obj_vec = torch.cat((fin_obj_vec, curr_fin_obj_vec), 0)
 
         # Reconstruct transition image
-        # TODO: Code goes here
+        recon_fin_img = torch.zeros((ini_img.size())).float()
+        if self.params['use_cuda']:
+            recon_fin_img = recon_fin_img.cuda()
+        for obj in range(num_objs.item()):
+            fin_obj_rgb, fin_obj_mask = self.render_module(fin_obj_vec[obj:obj+1, :])
+            fin_rgb_img = fin_obj_rgb * fin_obj_mask
+            recon_fin_img = recon_fin_img + fin_rgb_img
+
+        return recon_ini_img, recon_fin_img
 
 
 if __name__ == '__main__':
