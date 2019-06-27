@@ -26,11 +26,24 @@ class O2P2Trainer(nn.Module):
         self.train_iteration = 0
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.params['lr'])
 
+    def compute_perceptual_loss(self, img1, img2):
+        features_img1 = self.vgg(img1)
+        features_img2 = self.vgg(img2)
+        loss_criterion = nn.MSELoss()
+        return loss_criterion(features_img1.relu2_2, features_img2.relu2_2)
+
+    def compute_pixel_loss(self, img1, img2):
+        if self.params['pixel_loss_type'] == 'l1':
+            return torch.mean(torch.abs(img1 - img2))
+        elif self.params['pixel_loss_type'] == 'l2':
+            loss_criterion = nn.MSELoss()
+            return loss_criterion(img1, img2)
+
     def train(self):
         for epoch in range(self.params['max_epochs']):
             with trange(len(self.train_loader)) as t:
                 self.model.train()
-                for idx, sample in enumerate(train_loader):
+                for idx, sample in enumerate(self.train_loader):
                     # Get the required inputs to the model
                     ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
 
@@ -64,13 +77,12 @@ class O2P2Trainer(nn.Module):
                     loss_dict = info_dict('percept_loss_fin_img', percept_loss_fin_img.item(), loss_dict)
                     loss_dict = info_dict('overall_loss', overall_loss.item(), loss_dict)
 
+                    # Add losses to logger
                     for tag, value in loss_dict.items():
                         self.logger.scalar_summary(tag, value, self.train_iteration)
 
                     # Save original and reconstructed images
-                    save_path = self.results_path + self.params['exp_name'] + '/'
-                    mkdir_p(save_path)
-                    save_image(recon_ini_img, save_path + 'epoch_' + str(epoch) + '_reconstructed_ini_img.jpg')
+                    save_image(recon_ini_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_ini_img.jpg')
                     save_image(ini_img, save_path + 'epoch_' + str(epoch) + '_ini_img.jpg')
                     save_image(recon_fin_img, save_path + 'epoch_' + str(epoch) + '_reconstructed_fin_img.jpg')
                     save_image(fin_img, save_path + 'epoch_' + str(epoch) + '_fin_img.jpg')
@@ -82,14 +94,12 @@ class O2P2Trainer(nn.Module):
             
             # Save model and run validation
             if epoch % self.params['loggin_inteval'] == 0:
-                model_save_path = self.logs_path + self.params['exp_name'] + '/'
-                mkdir_p(model_save_path)
                 torch.save({
                     'epoch': epoch,
                     'model_state_dict': self.model.state_dict(),
                     'optimizer_state_dict': self.optimizer.state_dict(),
                     'loss': overall_loss
-                }, model_save_path + 'epoch_' + str(epoch) + '_model.pth')
+                }, self.logs_path + 'epoch_' + str(epoch) + '_model.pth')
                 self.eval(self.train_iteration, epoch)
 
         return loss_dict['overall_loss'], self.train_iteration
@@ -97,17 +107,39 @@ class O2P2Trainer(nn.Module):
 
     def eval(self, iteration, epoch):
         self.model.eval()
-        pass        
+        for idx, sample in enumerate(self.val_loader):
+            # Get the required inputs to the model
+                    ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
 
-    def compute_perceptual_loss(self, img1, img2):
-        features_img1 = self.vgg(img1)
-        features_img2 = self.vgg(img2)
-        loss_criterion = nn.MSELoss()
-        return loss_criterion(features_img1.relu2_2, features_img2.relu2_2)
+                    # Place them on cuda resources
+                    if self.params['use_cuda']:
+                        ini_img = ini_img.cuda()
+                        fin_img = fin_img.cuda()
+                        ini_masks = ini_masks.cuda()
+                        num_objs = num_objs.cuda()
+                    
+                    # Create loss dict to add losses to logger
+                    loss_dict = {}
+                    recon_ini_img, recon_fin_img = self.model(ini_img, ini_masks, num_objs)
 
-    def compute_pixel_loss(self, img1, img2):
-        if self.params['pixel_loss_type'] == 'l1':
-            return torch.mean(torch.abs(img1 - img2))
-        elif self.params['pixel_loss_type'] == 'l2':
-            loss_criterion = nn.MSELoss()
-            return loss_criterion(img1, img2)
+                    # Calculate losses and perform the backward pass
+                    pixel_loss_ini_img = self.compute_pixel_loss(ini_img, recon_ini_img)
+                    pixel_loss_fin_img = self.compute_pixel_loss(fin_img, recon_fin_img)
+                    percept_loss_ini_img = self.compute_perceptual_loss(ini_img, recon_ini_img)
+                    percept_loss_fin_img = self.compute_perceptual_loss(fin_img, recon_fin_img)
+                    overall_loss = pixel_loss_ini_img + pixel_loss_fin_img + \
+                                   percept_loss_ini_img + percept_loss_fin_img
+
+                    loss_dict = info_dict('val_pixel_loss_ini_img', pixel_loss_ini_img.item(), loss_dict)
+                    loss_dict = info_dict('val_pixel_loss_fin_img', pixel_loss_fin_img.item(), loss_dict)
+                    loss_dict = info_dict('val_percept_loss_ini_img', percept_loss_ini_img.item(), loss_dict)
+                    loss_dict = info_dict('val_percept_loss_fin_img', percept_loss_fin_img.item(), loss_dict)
+                    loss_dict = info_dict('val_overall_loss', overall_loss.item(), loss_dict)
+
+                    # Add losses to logger
+                     for tag, value in loss_dict.items():
+                        self.logger.scalar_summary(tag, value, iteration)
+
+                    
+
+                    
