@@ -109,37 +109,41 @@ class O2P2Trainer(nn.Module):
         self.model.eval()
         for idx, sample in enumerate(self.val_loader):
             # Get the required inputs to the model
-                    ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
+            ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
 
-                    # Place them on cuda resources
-                    if self.params['use_cuda']:
-                        ini_img = ini_img.cuda()
-                        fin_img = fin_img.cuda()
-                        ini_masks = ini_masks.cuda()
-                        num_objs = num_objs.cuda()
-                    
-                    # Create loss dict to add losses to logger
-                    loss_dict = {}
-                    recon_ini_img, recon_fin_img = self.model(ini_img, ini_masks, num_objs)
+            # Place them on cuda resources
+            if self.params['use_cuda']:
+                ini_img = ini_img.cuda()
+                fin_img = fin_img.cuda()
+                ini_masks = ini_masks.cuda()
+                num_objs = num_objs.cuda()
+            
+            # Create loss dict to add losses to logger
+            loss_dict = {}
+            recon_ini_img, recon_fin_img = self.model(ini_img, ini_masks, num_objs)
 
-                    # Calculate losses and perform the backward pass
-                    pixel_loss_ini_img = self.compute_pixel_loss(ini_img, recon_ini_img)
-                    pixel_loss_fin_img = self.compute_pixel_loss(fin_img, recon_fin_img)
-                    percept_loss_ini_img = self.compute_perceptual_loss(ini_img, recon_ini_img)
-                    percept_loss_fin_img = self.compute_perceptual_loss(fin_img, recon_fin_img)
-                    overall_loss = pixel_loss_ini_img + pixel_loss_fin_img + \
-                                   percept_loss_ini_img + percept_loss_fin_img
+            # Calculate losses and perform the backward pass
+            pixel_loss_ini_img = self.compute_pixel_loss(ini_img, recon_ini_img)
+            pixel_loss_fin_img = self.compute_pixel_loss(fin_img, recon_fin_img)
+            percept_loss_ini_img = self.compute_perceptual_loss(ini_img, recon_ini_img)
+            percept_loss_fin_img = self.compute_perceptual_loss(fin_img, recon_fin_img)
+            overall_loss = pixel_loss_ini_img + pixel_loss_fin_img + \
+                            percept_loss_ini_img + percept_loss_fin_img
 
-                    loss_dict = info_dict('val_pixel_loss_ini_img', pixel_loss_ini_img.item(), loss_dict)
-                    loss_dict = info_dict('val_pixel_loss_fin_img', pixel_loss_fin_img.item(), loss_dict)
-                    loss_dict = info_dict('val_percept_loss_ini_img', percept_loss_ini_img.item(), loss_dict)
-                    loss_dict = info_dict('val_percept_loss_fin_img', percept_loss_fin_img.item(), loss_dict)
-                    loss_dict = info_dict('val_overall_loss', overall_loss.item(), loss_dict)
+            loss_dict = info_dict('val_pixel_loss_ini_img', pixel_loss_ini_img.item(), loss_dict)
+            loss_dict = info_dict('val_pixel_loss_fin_img', pixel_loss_fin_img.item(), loss_dict)
+            loss_dict = info_dict('val_percept_loss_ini_img', percept_loss_ini_img.item(), loss_dict)
+            loss_dict = info_dict('val_percept_loss_fin_img', percept_loss_fin_img.item(), loss_dict)
+            loss_dict = info_dict('val_overall_loss', overall_loss.item(), loss_dict)
 
-                    # Add losses to logger
-                     for tag, value in loss_dict.items():
-                        self.logger.scalar_summary(tag, value, iteration)
+            # Add losses to logger
+                for tag, value in loss_dict.items():
+                self.logger.scalar_summary(tag, value, iteration)
+            
+        save_image(recon_ini_img, self.results_path + 'epoch_' + str(epoch) + '_val_reconstructed_ini_img.jpg')
+        save_image(recon_fin_img, self.results_path + 'epoch_' + str(epoch) + '_val_reconstructed_fin_img.jpg')
+        save_image(ini_img, self.results_path + 'epoch_' + str(epoch) + '_val_ini_img.jpg')
+        save_image(fin_img, self.results_path + 'epoch_' + str(epoch) + '_val_fin_img.jpg')
 
-                    
-
+        
                     
