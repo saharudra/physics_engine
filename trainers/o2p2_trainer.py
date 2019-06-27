@@ -1,6 +1,8 @@
 import torch 
 import torch.nn as nn 
 import torch.nn.functional as F 
+from torchvision.utils import save_image
+
 from modules.vgg import Vgg16
 from models.o2p2 import O2P2Model
 
@@ -64,27 +66,44 @@ class O2P2Trainer(nn.Module):
 
                     for tag, value in loss_dict.items():
                         self.logger.scalar_summary(tag, value, self.train_iteration)
+
+                    # Save original and reconstructed images
+                    save_path = self.results_path + self.params['exp_name'] + '/'
+                    mkdir_p(save_path)
+                    save_image(recon_ini_img, save_path + 'epoch_' + str(epoch) + '_reconstructed_ini_img.jpg')
+                    save_image(ini_img, save_path + 'epoch_' + str(epoch) + '_ini_img.jpg')
+                    save_image(recon_fin_img, save_path + 'epoch_' + str(epoch) + '_reconstructed_fin_img.jpg')
+                    save_image(fin_img, save_path + 'epoch_' + str(epoch) + '_fin_img.jpg')
                     
                     self.train_iteration += 1
                     loss_dict = info_dict('Epoch', epoch, loss_dict)
                     t.set_postfix(loss_dict)
                     t.update()
             
+            # Save model and run validation
             if epoch % self.params['loggin_inteval'] == 0:
-                
+                model_save_path = self.logs_path + self.params['exp_name'] + '/'
+                mkdir_p(model_save_path)
+                torch.save({
+                    'epoch': epoch,
+                    'model_state_dict': self.model.state_dict(),
+                    'optimizer_state_dict': self.optimizer.state_dict(),
+                    'loss': overall_loss
+                }, model_save_path + 'epoch_' + str(epoch) + '_model.pth')
+                self.eval(self.train_iteration, epoch)
+
+        return loss_dict['overall_loss'], self.train_iteration
 
 
-
-
-    def eval(self):
-        pass
+    def eval(self, iteration, epoch):
+        self.model.eval()
+        pass        
 
     def compute_perceptual_loss(self, img1, img2):
         features_img1 = self.vgg(img1)
         features_img2 = self.vgg(img2)
         loss_criterion = nn.MSELoss()
         return loss_criterion(features_img1.relu2_2, features_img2.relu2_2)
-
 
     def compute_pixel_loss(self, img1, img2):
         if self.params['pixel_loss_type'] == 'l1':

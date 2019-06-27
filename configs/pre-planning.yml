@@ -37,3 +37,4 @@ physics-transition:
 use_cuda: False
 batch_size: 1
 lr: 0.0001
+loggin_interval: 10
