@@ -104,7 +104,9 @@ if __name__ == '__main__':
         ini_img = sample['ini_img']
         ini_masks = sample['ini_masks']
         num_objs = sample['num_objs']
-        model(ini_img, ini_masks, num_objs)
+        recon_ini_img, recon_fin_img = model(ini_img, ini_masks, num_objs)
+        print(recon_ini_img.size(), recon_fin_img.size())
+        import pdb; pdb.set_trace()
         # save_image(ini_img, 'ini_img.png')
         # save_image(ini_masks[:, 0:1, :, :], 'curr_obj_mask.png')
         # import pdb; pdb.set_trace()
