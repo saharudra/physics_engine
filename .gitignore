@@ -9,6 +9,7 @@ __pycache__/
 # Directories
 data/
 results/
+logs/
 
 # Distribution / packaging
 .Python

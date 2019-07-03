@@ -45,7 +45,7 @@ class O2P2Trainer(nn.Module):
                 self.model.train()
                 for idx, sample in enumerate(self.train_loader):
                     # Get the required inputs to the model
-                    ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
+                    ini_img, fin_img, ini_masks, num_objs = sample['ini_img'], sample['fin_img'], sample['ini_masks'], sample['num_objs']
 
                     # Place them on cuda resources
                     if self.params['use_cuda']:
@@ -83,9 +83,9 @@ class O2P2Trainer(nn.Module):
 
                     # Save original and reconstructed images
                     save_image(recon_ini_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_ini_img.jpg')
-                    save_image(ini_img, save_path + 'epoch_' + str(epoch) + '_ini_img.jpg')
-                    save_image(recon_fin_img, save_path + 'epoch_' + str(epoch) + '_reconstructed_fin_img.jpg')
-                    save_image(fin_img, save_path + 'epoch_' + str(epoch) + '_fin_img.jpg')
+                    save_image(ini_img, self.results_path + 'epoch_' + str(epoch) + '_ini_img.jpg')
+                    save_image(recon_fin_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_fin_img.jpg')
+                    save_image(fin_img, self.results_path + 'epoch_' + str(epoch) + '_fin_img.jpg')
                     
                     self.train_iteration += 1
                     loss_dict = info_dict('Epoch', epoch, loss_dict)
@@ -109,7 +109,7 @@ class O2P2Trainer(nn.Module):
         self.model.eval()
         for idx, sample in enumerate(self.val_loader):
             # Get the required inputs to the model
-            ini_img, fin_img, ini_masks, num_objs = sample['ini_img']
+            ini_img, fin_img, ini_masks, num_objs = sample['ini_img'], sample['fin_img'], sample['ini_masks'], sample['num_objs']
 
             # Place them on cuda resources
             if self.params['use_cuda']:
@@ -137,7 +137,7 @@ class O2P2Trainer(nn.Module):
             loss_dict = info_dict('val_overall_loss', overall_loss.item(), loss_dict)
 
             # Add losses to logger
-                for tag, value in loss_dict.items():
+            for tag, value in loss_dict.items():
                 self.logger.scalar_summary(tag, value, iteration)
             
         save_image(recon_ini_img, self.results_path + 'epoch_' + str(epoch) + '_val_reconstructed_ini_img.jpg')

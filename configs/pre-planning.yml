@@ -2,8 +2,8 @@
 exp_name: "o2p2_pre_planning_next_state_prediction"
 
 # Dataset and Dataloader parameters
-data_root: '/home/rudra/Downloads/rudra/relationship_modeling/o2p2/physics_engine/data/initial_final'
-project_root: '/home/rudra/Downloads/rudra/relationship_modeling/o2p2/physics_engine'
+data_root: '/data/rudra/interaction_modeling/o2p2/physics_engine/data/initial_final'
+project_root: '/data/rudra/interaction_modeling/o2p2/physics_engine'
 num_files: 3  # Number of files for each of the instance in the train or validation set
 max_objects: 10 # Maximum number of objects that can be present in the image, including the dropped object
 img_ic: 3  # Number of channels in the input image
@@ -39,3 +39,5 @@ use_cuda: False
 batch_size: 1
 lr: 0.0001
 loggin_interval: 10
+max_epochs: 600
+pixel_loss_type: l2
