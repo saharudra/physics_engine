@@ -61,6 +61,8 @@ class O2P2Model(nn.Module):
             interact_obj_vec = interact_obj_vec.cuda()
         for curr_obj in range(num_objs.item()):
             curr_interact_obj_vec = torch.zeros((1, self.params['perception']['obj_dim']))
+            if self.params['use_cuda']:
+                curr_interact_obj_vec = curr_interact_obj_vec.cuda()
             for other_obj in range(num_objs.item()):
                 if not(curr_obj == other_obj):
                     temp_obj_vec = self.physics_interaction_module(ini_obj_vec[curr_obj:curr_obj+1, :], ini_obj_vec[other_obj:other_obj+1, :])

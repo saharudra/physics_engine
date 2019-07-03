@@ -23,6 +23,8 @@ class O2P2Trainer(nn.Module):
         self.results_path = results_path
         self.logs_path = logs_path
         self.vgg = Vgg16(requires_grad=False)
+        if self.params['use_cuda']:
+            self.vgg = self.vgg.cuda()
         self.train_iteration = 0
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.params['lr'])
 
@@ -70,6 +72,7 @@ class O2P2Trainer(nn.Module):
                                    percept_loss_ini_img + percept_loss_fin_img
 
                     overall_loss.backward()
+                    self.optimizer.step()
 
                     loss_dict = info_dict('pixel_loss_ini_img', pixel_loss_ini_img.item(), loss_dict)
                     loss_dict = info_dict('pixel_loss_fin_img', pixel_loss_fin_img.item(), loss_dict)
