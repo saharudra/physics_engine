@@ -96,7 +96,7 @@ class O2P2Trainer(nn.Module):
                     t.update()
             
             # Save model and run validation
-            if epoch % self.params['loggin_inteval'] == 0:
+            if epoch % self.params['loggin_interval'] == 0:
                 torch.save({
                     'epoch': epoch,
                     'model_state_dict': self.model.state_dict(),
