@@ -83,17 +83,17 @@ class O2P2Trainer(nn.Module):
                     # Add losses to logger
                     for tag, value in loss_dict.items():
                         self.logger.scalar_summary(tag, value, self.train_iteration)
-
-                    # Save original and reconstructed images
-                    save_image(recon_ini_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_ini_img.jpg')
-                    save_image(ini_img, self.results_path + 'epoch_' + str(epoch) + '_ini_img.jpg')
-                    save_image(recon_fin_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_fin_img.jpg')
-                    save_image(fin_img, self.results_path + 'epoch_' + str(epoch) + '_fin_img.jpg')
                     
                     self.train_iteration += 1
                     loss_dict = info_dict('Epoch', epoch, loss_dict)
                     t.set_postfix(loss_dict)
                     t.update()
+            
+            # Save original and reconstructed images
+            save_image(recon_ini_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_ini_img.jpg')
+            save_image(ini_img, self.results_path + 'epoch_' + str(epoch) + '_ini_img.jpg')
+            save_image(recon_fin_img, self.results_path + 'epoch_' + str(epoch) + '_reconstructed_fin_img.jpg')
+            save_image(fin_img, self.results_path + 'epoch_' + str(epoch) + '_fin_img.jpg')
             
             # Save model and run validation
             if epoch % self.params['loggin_interval'] == 0:
