@@ -1,17 +1,8 @@
-### Implementation of O2P2 
+### Object-Oriented Prediction and Planning -- Work in progress.
+PyTorch implementation of [ Reasoning About Physical Interactions with Object-Oriented Prediction and Planning](https://people.eecs.berkeley.edu/~janner/o2p2/).
 
-Data directory structure:
+This is currently a WIP with low priority. The code for data generation can be found [here](https://github.com/JannerM/o2p2). 
 
-Initial Final: {'initial_final':{'train': , 'val': }}
-
-#### Choices to try
-* In the paper, they mention perception module takes in segmented images. 
-    * Input: (img, mask) or (img * mask)
-        * Currently trying (img, mask). Try (img * mask) as well. 
-* Render module for mask.
-    * Putting Sigmoid on top of final convolution.
-        * Currently using sigmoid, try w/o sigmoid in which case the mask outputs are logits.
-* Physics Interaction Module
-    * Combining the two object vectors before passing them through the interaction engine.
-        * Currently concatenating them.
-    * Using batch-normalization in the physics engine's mlp.
+#### TODOs:
+- [ ] Implement batched training.
+- [ ] Implement planning process.
